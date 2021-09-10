@@ -48,6 +48,27 @@ pub fn door_call<T,U: Default>(fd: c_int, x: T) -> U {
 
 }
 
+pub fn door_callp<T,U>(fd: c_int, x: T, res: *mut *mut U) -> *mut U {
+
+    unsafe{
+
+        let mut arg = door_arg_t{
+            data_ptr: (& x as *const T) as *mut c_char,
+            data_size: size_of::<T>() as u64,
+            desc_ptr: ptr::null_mut(),
+            desc_num: 0,
+            rbuf: (*res) as *mut c_char,
+            rsize: size_of::<*mut U>() as u64,
+        };
+
+        let _result = sys::door_call(fd, &mut arg);
+
+        return arg.rbuf as *mut U
+
+    }
+
+}
+
 pub fn door_run(fd: i32, path: &CStr) -> ! {
 
     unsafe {
