@@ -1,6 +1,7 @@
 pub mod sys;
 
 use std::ptr;
+use std::alloc::{realloc, Layout};
 use std::mem::size_of;
 use std::os::raw::{
     c_char,
@@ -17,6 +18,7 @@ use crate::sys::{
     unlink,
     fattach,
     pause,
+    munmap,
     O_RDWR, 
     O_CREAT,
 };
@@ -63,7 +65,19 @@ pub fn door_callp<T,U>(fd: c_int, x: T, res: *mut *mut U) -> *mut U {
 
         let _result = sys::door_call(fd, &mut arg);
 
-        return arg.rbuf as *mut U
+        if (*res) as *mut c_char != arg.rbuf {
+            let newp = realloc((*res) as *mut u8, Layout::new::<U>(),  arg.rsize as usize);
+            *res = newp as *mut U;
+            ptr::copy(
+                arg.rbuf as *const u8,
+                (*res) as *mut u8,
+                arg.rsize as usize,
+            );
+            munmap(arg.rbuf, arg.rsize);
+        }
+
+
+        return *res;
 
     }
 
