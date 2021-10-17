@@ -3,11 +3,6 @@ name = "rusty-doors"
 version = "0.1.0"
 edition = "2018"
 
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
-
 [dependencies]
 rusty-doors-macros = { path = "../macros" }
-
-[build-dependencies]
-bindgen = "0.59"
-
+libc = "0.2"

@@ -76,9 +76,9 @@ pub fn door(
         unsafe extern "C" fn #name(
             _cookie: *mut std::os::raw::c_void,
             dataptr: *mut std::os::raw::c_char, 
-            _datasize: rusty_doors::sys::size_t,
-            _descptr: *mut rusty_doors::sys::door_desc_t,
-            _ndesc: rusty_doors::sys::uint_t,
+            _datasize: usize,
+            _descptr: *mut rusty_doors::sys::DoorDesc,
+            _ndesc: std::os::raw::c_uint,
          ) {
 
             let f = || -> #return_type {
@@ -89,7 +89,7 @@ pub fn door(
             let mut result = f();
             rusty_doors::sys::door_return(
                 (&mut result as *mut #return_type) as *mut std::os::raw::c_char,
-                std::mem::size_of::<#return_type>() as u64,
+                std::mem::size_of::<#return_type>(),
                 std::ptr::null_mut(),
                 0,
             );

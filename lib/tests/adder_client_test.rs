@@ -1,13 +1,13 @@
 // Copyright 2021 Oxide Computer Company
 
 use std::fs::File;
-use rusty_doors::{door_call, sys::ulong_t};
+use rusty_doors::door_call;
 use std::os::unix::io::AsRawFd;
 
 #[derive(Default)]
 #[repr(C)]
 struct Wrapped {
-    val: ulong_t,
+    val: u64,
     other: u16,
 }
 
@@ -16,7 +16,7 @@ fn test_add_client() {
 
     let file = File::open("/tmp/addr-test-door").expect("open fd");
 
-    let x: ulong_t = 74;
+    let x: u64 = 74;
     let res: Wrapped = door_call(file.as_raw_fd(), x);
 
     assert_eq!(res.val, 121);
