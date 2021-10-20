@@ -30,7 +30,7 @@ pub fn door_call<T,U: Default>(fd: c_int, x: T) -> U {
     let mut res: U = U::default();
 
     let mut arg = DoorArg {
-        data_ptr: (& x as *const T) as *mut c_char,
+        data_ptr: (&x as *const T) as *mut c_char,
         data_size: size_of::<T>(),
         desc_ptr: ptr::null_mut(),
         desc_num: 0,
@@ -49,7 +49,7 @@ pub fn door_callp<T,U>(fd: c_int, x: T, res: *mut *mut U) -> *mut U {
     unsafe{
 
         let mut arg = DoorArg {
-            data_ptr: (& x as *const T) as *mut c_char,
+            data_ptr: (&x as *const T) as *mut c_char,
             data_size: size_of::<T>(),
             desc_ptr: ptr::null_mut(),
             desc_num: 0,
@@ -60,7 +60,11 @@ pub fn door_callp<T,U>(fd: c_int, x: T, res: *mut *mut U) -> *mut U {
         let _result = sys::door_call(fd, &mut arg);
 
         if (*res) as *mut c_char != arg.rbuf {
-            let newp = realloc((*res) as *mut u8, Layout::new::<U>(),  arg.rsize as usize);
+            let newp = realloc(
+                (*res) as *mut u8,
+                Layout::new::<U>(),
+                arg.rsize as usize,
+            );
             *res = newp as *mut U;
             ptr::copy(
                 arg.rbuf as *const u8,
@@ -74,6 +78,25 @@ pub fn door_callp<T,U>(fd: c_int, x: T, res: *mut *mut U) -> *mut U {
         return *res;
 
     }
+
+}
+
+pub fn door_call_slice<T,U: Default>(fd: c_int, x: &[T]) -> U {
+
+    let mut res: U = U::default();
+
+    let mut arg = DoorArg {
+        data_ptr: (&x[0] as *const T) as *mut c_char,
+        data_size: size_of::<T>() * x.len(),
+        desc_ptr: ptr::null_mut(),
+        desc_num: 0,
+        rbuf: (&mut res as *mut U) as *mut c_char,
+        rsize: size_of::<U>(),
+    };
+
+    let _result = unsafe { sys::door_call(fd, &mut arg) };
+
+    return res
 
 }
 
