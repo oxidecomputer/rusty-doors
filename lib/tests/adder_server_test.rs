@@ -3,7 +3,7 @@
 use rusty_doors::{door_create, door_run};
 use rusty_doors_macros::door;
 use std::ffi::CString;
-use std::thread::{spawn, sleep};
+use std::thread::{sleep, spawn};
 use std::time::Duration;
 
 #[derive(Default)]
