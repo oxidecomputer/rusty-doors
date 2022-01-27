@@ -31,7 +31,13 @@ pub struct DDesc {
     pub d_id: c_ulonglong,
 }
 
-pub type DoorFunc = unsafe extern "C" fn(*mut c_void, *mut c_char, usize, *mut DoorDesc, c_uint);
+pub type DoorFunc = unsafe extern "C" fn(
+    *mut c_void,
+    *mut c_char,
+    usize,
+    *mut DoorDesc,
+    c_uint,
+);
 
 extern "C" {
     pub fn door_create(

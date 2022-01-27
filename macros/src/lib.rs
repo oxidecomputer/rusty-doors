@@ -25,9 +25,12 @@ pub fn door(_attr: TokenStream, item: TokenStream) -> TokenStream {
     let arg = &input.sig.inputs[0];
     let (arg_ident, arg_type) = match arg {
         FnArg::Receiver(_) => {
-            return Error::new(arg.span(), "only standalone functions supported")
-                .to_compile_error()
-                .into();
+            return Error::new(
+                arg.span(),
+                "only standalone functions supported",
+            )
+            .to_compile_error()
+            .into();
         }
 
         FnArg::Typed(pt) => {
@@ -35,14 +38,17 @@ pub fn door(_attr: TokenStream, item: TokenStream) -> TokenStream {
                 Pat::Ident(i) => i.ident.to_string(),
 
                 _ => {
-                    return Error::new(arg.span(), "only identifier arguments supported")
-                        .to_compile_error()
-                        .into()
+                    return Error::new(
+                        arg.span(),
+                        "only identifier arguments supported",
+                    )
+                    .to_compile_error()
+                    .into()
                 }
             };
             (
                 format_ident!("{}", p),
-                format_ident!("{}", (*pt.ty).to_token_stream().to_string()),
+                *pt.ty.clone(),
             )
         }
     };
