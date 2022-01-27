@@ -19,5 +19,5 @@ cargo clippy
 ### Testing
 
 ```
-./lib/tetes/run_tests.sh
+./lib/tests/run_tests.sh
 ```

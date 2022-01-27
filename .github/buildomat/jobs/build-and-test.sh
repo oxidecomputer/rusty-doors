@@ -4,10 +4,7 @@
 #: variety = "basic"
 #: target = "helios"
 #: rust_toolchain = "nightly-2021-09-03"
-#: output_rules = [
-#:   "target/debug/netadm",
-#:   "target/release/netadm",
-#: ]
+#: output_rules = [ ]
 #:
 
 set -o errexit
