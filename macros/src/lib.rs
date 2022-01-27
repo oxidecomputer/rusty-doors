@@ -1,8 +1,24 @@
+//! This module contains a single macro [`macro@door`] for transforming a rust
+//! function into a door handler.
+
 use proc_macro::TokenStream;
 use quote::{format_ident, quote, ToTokens};
 use syn::spanned::Spanned;
 use syn::{parse_macro_input, Error, FnArg, ItemFn, Pat, ReturnType};
 
+/// This macro transforms function into a door call handler. See `rusty_doors`
+/// module documentation for usage.
+///
+/// Only single argument functions are supported e.g.
+/// ```
+/// struct MyArg {}
+/// struct MyResult {}
+///
+/// #[door]
+/// fn serv_proc(x: MyArg) -> MyResult {
+///     todo!();
+/// } 
+/// ```
 #[proc_macro_attribute]
 pub fn door(_attr: TokenStream, item: TokenStream) -> TokenStream {
     // parse the function this attribute was applied to

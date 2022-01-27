@@ -2,6 +2,7 @@
 
 use std::os::raw::{c_char, c_int, c_uint, c_ulonglong, c_void};
 
+/// Structure used to pass/return to a [`door_call`] function.
 #[repr(C)]
 pub struct DoorArg {
     pub data_ptr: *mut c_char,
@@ -12,18 +13,21 @@ pub struct DoorArg {
     pub rsize: usize,
 }
 
+/// Structure used to pass descriptors/objects in door invocations
 #[repr(C)]
 pub struct DoorDesc {
     pub d_attributes: c_uint,
     pub d_data: DoorData,
 }
 
+/// Underlying filesystem object definition
 #[repr(C)]
 pub union DoorData {
     pub d_desc: DDesc,
     pub d_resv: [c_int; 5usize],
 }
 
+/// Underlying file descriptor
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct DDesc {
@@ -31,6 +35,7 @@ pub struct DDesc {
     pub d_id: c_ulonglong,
 }
 
+/// Function signature for door invocations
 pub type DoorFunc = unsafe extern "C" fn(
     *mut c_void,
     *mut c_char,
@@ -40,13 +45,32 @@ pub type DoorFunc = unsafe extern "C" fn(
 );
 
 extern "C" {
+
+    /// The `door_create` function creates a door descriptor that describes the
+    /// procedure specified by the function `server_procedure`.
+    ///
+    /// See `man door_create` for more details.
     pub fn door_create(
         server_procedure: DoorFunc,
         cookie: *mut c_void,
         attributes: c_uint,
     ) -> c_int;
+
+    /// `The door_call` function invokes the function associated with the door
+    /// descriptor d, and passes the arguments (if any) specified in params.
+    ///
+    /// See `man door_call` for more details.
     pub fn door_call(d: c_int, params: *mut DoorArg) -> c_int;
+
+    /// The `fattach` function attaches a STREAMS- or doors-based file
+    /// descriptor to an object in the file system name space
+    ///
+    /// See `man fattach` for more details
     pub fn fattach(fildes: c_int, path: *const c_char) -> c_int;
+
+    /// The `door_return` function returns from a door invocation.
+    ///
+    /// See `man door_return` for more details.
     pub fn door_return(
         data_ptr: *mut c_char,
         data_size: usize,
