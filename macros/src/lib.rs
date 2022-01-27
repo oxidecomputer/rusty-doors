@@ -17,7 +17,7 @@ use syn::{parse_macro_input, Error, FnArg, ItemFn, Pat, ReturnType};
 /// #[door]
 /// fn serv_proc(x: MyArg) -> MyResult {
 ///     todo!();
-/// } 
+/// }
 /// ```
 #[proc_macro_attribute]
 pub fn door(_attr: TokenStream, item: TokenStream) -> TokenStream {

@@ -7,7 +7,16 @@ A streamlined and safe interface for creating and using Unix Doors.
 This crate is only known to work on the [illumos](https://illumos.org) operating
 system.
 
-## Testing
+## Contributing
+
+### Basic Checks
+
+```
+cargo fmt -- --check
+cargo clippy
+```
+
+### Testing
 
 ```
 ./lib/tetes/run_tests.sh
