@@ -1,4 +1,7 @@
 #!/bin/bash
+
+set -e
+
 pfexec cargo test add_server &
 sleep 2
 pfexec cargo test add_client
