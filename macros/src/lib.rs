@@ -1,21 +1,10 @@
 use proc_macro::TokenStream;
+use quote::{format_ident, quote, ToTokens};
 use syn::spanned::Spanned;
-use syn::{
-    Error,
-    parse_macro_input,
-    ItemFn,
-    Pat,
-    FnArg,
-    ReturnType,
-};
-use quote::{ToTokens, quote, format_ident};
+use syn::{parse_macro_input, Error, FnArg, ItemFn, Pat, ReturnType};
 
 #[proc_macro_attribute]
-pub fn door(
-    _attr: TokenStream,
-    item: TokenStream,
-) -> TokenStream {
-
+pub fn door(_attr: TokenStream, item: TokenStream) -> TokenStream {
     // parse the function this attribute was applied to
     let input = parse_macro_input!(item as ItemFn);
 
@@ -25,37 +14,34 @@ pub fn door(
     // check number of arguments, we only support a single argument
     if input.sig.inputs.len() != 1 {
         return Error::new(
-            input.sig.inputs.span(), 
+            input.sig.inputs.span(),
             "only single argument doors supported",
-        ).to_compile_error().into();
+        )
+        .to_compile_error()
+        .into();
     }
 
     // extract the single argument and it's type
     let arg = &input.sig.inputs[0];
     let (arg_ident, arg_type) = match arg {
-
         FnArg::Receiver(_) => {
-            return Error::new(
-                arg.span(), 
-                "only standalone functions supported",
-            ).to_compile_error().into();
-        },
+            return Error::new(arg.span(), "only standalone functions supported")
+                .to_compile_error()
+                .into();
+        }
 
         FnArg::Typed(pt) => {
             let p = match &*pt.pat {
-
                 Pat::Ident(i) => i.ident.to_string(),
 
                 _ => {
-                    return Error::new(
-                        arg.span(),
-                        "only identifier arguments supported",
-                    ).to_compile_error().into()
+                    return Error::new(arg.span(), "only identifier arguments supported")
+                        .to_compile_error()
+                        .into()
                 }
-
             };
             (
-                format_ident!("{}", p), 
+                format_ident!("{}", p),
                 format_ident!("{}", (*pt.ty).to_token_stream().to_string()),
             )
         }
@@ -75,7 +61,7 @@ pub fn door(
 
         unsafe extern "C" fn #name(
             _cookie: *mut std::os::raw::c_void,
-            dataptr: *mut std::os::raw::c_char, 
+            dataptr: *mut std::os::raw::c_char,
             _datasize: usize,
             _descptr: *mut rusty_doors::sys::DoorDesc,
             _ndesc: std::os::raw::c_uint,
@@ -99,5 +85,4 @@ pub fn door(
     };
 
     TokenStream::from(q)
-
 }

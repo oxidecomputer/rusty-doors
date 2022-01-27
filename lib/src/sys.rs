@@ -1,12 +1,6 @@
 // Copyright 2021 Oxide Computer Company
 
-use std::os::raw::{
-    c_char,
-    c_uint,
-    c_int,
-    c_void,
-    c_ulonglong,
-};
+use std::os::raw::{c_char, c_int, c_uint, c_ulonglong, c_void};
 
 #[repr(C)]
 pub struct DoorArg {
@@ -21,7 +15,7 @@ pub struct DoorArg {
 #[repr(C)]
 pub struct DoorDesc {
     pub d_attributes: c_uint,
-    pub d_data: DoorData
+    pub d_data: DoorData,
 }
 
 #[repr(C)]
@@ -37,13 +31,7 @@ pub struct DDesc {
     pub d_id: c_ulonglong,
 }
 
-pub type DoorFunc = unsafe extern "C" fn(
-    *mut c_void,
-    *mut c_char,
-    usize,
-    *mut DoorDesc,
-    c_uint,
-);
+pub type DoorFunc = unsafe extern "C" fn(*mut c_void, *mut c_char, usize, *mut DoorDesc, c_uint);
 
 extern "C" {
     pub fn door_create(

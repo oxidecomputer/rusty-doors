@@ -1,8 +1,8 @@
 // Copyright 2021 Oxide Computer Company
 
-use std::ffi::CString;
-use rusty_doors::{door_run, door_create};
+use rusty_doors::{door_create, door_run};
 use rusty_doors_macros::door;
+use std::ffi::CString;
 
 #[derive(Default)]
 #[repr(C)]
@@ -15,7 +15,10 @@ struct Wrapped {
 fn serv_proc(x: u64) -> Wrapped {
     let res = x + 47;
     println!("ARG: {}", x);
-    return Wrapped{val: res, other: 99};
+    return Wrapped {
+        val: res,
+        other: 99,
+    };
 }
 
 #[test]
