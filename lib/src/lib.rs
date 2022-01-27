@@ -1,3 +1,4 @@
+#![allow(clippy::not_unsafe_ptr_arg_deref)]
 pub mod sys;
 
 use crate::sys::{fattach, DoorArg};
@@ -22,7 +23,7 @@ pub fn door_call<T, U: Default>(fd: c_int, x: T) -> U {
 
     let _result = unsafe { sys::door_call(fd, &mut arg) };
 
-    return res;
+    res
 }
 
 pub fn door_callp<T, U>(fd: c_int, x: T, res: *mut *mut U) -> *mut U {
@@ -45,7 +46,7 @@ pub fn door_callp<T, U>(fd: c_int, x: T, res: *mut *mut U) -> *mut U {
             munmap(arg.rbuf as *mut c_void, arg.rsize);
         }
 
-        return *res;
+        *res
     }
 }
 
@@ -63,7 +64,7 @@ pub fn door_call_slice<T, U: Default>(fd: c_int, x: &[T]) -> U {
 
     let _result = unsafe { sys::door_call(fd, &mut arg) };
 
-    return res;
+    res
 }
 
 pub fn door_run(fd: i32, path: &CStr) -> ! {
