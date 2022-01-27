@@ -46,10 +46,7 @@ pub fn door(_attr: TokenStream, item: TokenStream) -> TokenStream {
                     .into()
                 }
             };
-            (
-                format_ident!("{}", p),
-                *pt.ty.clone(),
-            )
+            (format_ident!("{}", p), *pt.ty.clone())
         }
     };
 
