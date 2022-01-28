@@ -1,0 +1,1 @@
+initSidebarItems({"attr":[["door","This macro transforms function into a door call handler. See `rusty_doors` module documentation for usage."]]});

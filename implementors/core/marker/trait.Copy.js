@@ -1,0 +1,3 @@
+(function() {var implementors = {};
+implementors["rusty_doors"] = [{"text":"impl <a class=\"trait\" href=\"https://doc.rust-lang.org/1.58.1/core/marker/trait.Copy.html\" title=\"trait core::marker::Copy\">Copy</a> for <a class=\"struct\" href=\"rusty_doors/sys/struct.DDesc.html\" title=\"struct rusty_doors::sys::DDesc\">DDesc</a>","synthetic":false,"types":["rusty_doors::sys::DDesc"]}];
+if (window.register_implementors) {window.register_implementors(implementors);} else {window.pending_implementors = implementors;}})()
