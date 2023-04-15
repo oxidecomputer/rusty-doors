@@ -1,3 +1,9 @@
+// This Source Code Form is subject to the terms of the Mozilla Public
+// License, v. 2.0. If a copy of the MPL was not distributed with this
+// file, You can obtain one at https://mozilla.org/MPL/2.0/.
+
+// Copyright 2023 Oxide Computer Company
+
 #![allow(clippy::needless_doctest_main)]
 
 //! # Rusty Doors
@@ -113,17 +119,10 @@ pub fn door_callp<T, U>(
         let _result = sys::door_call(fd, &mut arg);
 
         if (*res_ref) as *mut c_char != arg.rbuf {
-            let newp = realloc(
-                (*res_ref) as *mut u8,
-                Layout::new::<U>(),
-                arg.rsize as usize,
-            );
+            let newp =
+                realloc((*res_ref) as *mut u8, Layout::new::<U>(), arg.rsize);
             *res_ref = newp as *mut U;
-            ptr::copy(
-                arg.rbuf as *const u8,
-                (*res_ref) as *mut u8,
-                arg.rsize as usize,
-            );
+            ptr::copy(arg.rbuf as *const u8, (*res_ref) as *mut u8, arg.rsize);
             munmap(arg.rbuf as *mut c_void, arg.rsize);
         }
 
@@ -156,7 +155,7 @@ pub fn door_run(fd: i32, path: &CStr) -> ! {
     unsafe {
         let p = path.as_ptr();
         unlink(p);
-        close(open(p, (O_CREAT | O_RDWR) as i32, 0x644));
+        close(open(p, O_CREAT | O_RDWR, 0x644));
         fattach(fd, p);
         loop {
             pause();
