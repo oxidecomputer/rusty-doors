@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["door_call","door_create","door_return","fattach"],"struct":["DDesc","DoorArg","DoorDesc"],"type":["DoorFunc"],"union":["DoorData"]};

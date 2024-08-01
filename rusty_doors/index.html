@@ -1,0 +1,58 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Rusty Doors"><title>rusty_doors - Rust</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-46f98efaafac5295.ttf.woff2,FiraSans-Regular-018c141bf0843ffd.woff2,FiraSans-Medium-8f9a781e4970d388.woff2,SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2,SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../static.files/rustdoc-081576b923113409.css"><meta name="rustdoc-vars" data-root-path="../" data-static-root-path="../static.files/" data-current-crate="rusty_doors" data-themes="" data-resource-suffix="" data-rustdoc-version="1.79.0 (129f3b996 2024-06-10)" data-channel="1.79.0" data-search-js="search-bf21c90c8c1d92b1.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../static.files/storage-e32f0c247825364d.js"></script><script defer src="../crates.js"></script><script defer src="../static.files/main-20a3ad099b048cf2.js"></script><noscript><link rel="stylesheet" href="../static.files/noscript-09095024cf37855e.css"></noscript><link rel="alternate icon" type="image/png" href="../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc mod crate"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle" title="show sidebar"></button></nav><nav class="sidebar"><div class="sidebar-crate"><h2><a href="../rusty_doors/index.html">rusty_doors</a><span class="version">0.1.0</span></h2></div><div class="sidebar-elems"><ul class="block"><li><a id="all-types" href="all.html">All Items</a></li></ul><section><ul class="block"><li><a href="#modules">Modules</a></li><li><a href="#functions">Functions</a></li></ul></section></div></nav><div class="sidebar-resizer"></div><main><div class="width-limiter"><nav class="sub"><form class="search-form"><span></span><div id="sidebar-button" tabindex="-1"><a href="../rusty_doors/all.html" title="show sidebar"></a></div><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Type ‘S’ or ‘/’ to search, ‘?’ for more options…" type="search"><div id="help-button" tabindex="-1"><a href="../help.html" title="help">?</a></div><div id="settings-menu" tabindex="-1"><a href="../settings.html" title="settings">Settings</a></div></form></nav><section id="main-content" class="content"><div class="main-heading"><h1>Crate <a class="mod" href="#">rusty_doors</a><button id="copy-path" title="Copy item path to clipboard">Copy item path</button></h1><span class="out-of-band"><a class="src" href="../src/rusty_doors/lib.rs.html#7-170">source</a> · <button id="toggle-all-docs" title="collapse all docs">[<span>&#x2212;</span>]</button></span></div><details class="toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><h2 id="rusty-doors"><a class="doc-anchor" href="#rusty-doors">§</a>Rusty Doors</h2>
+<p>A streamlined and safe interface for creating and using Unix Doors.</p>
+<h3 id="a-simple-door-server"><a class="doc-anchor" href="#a-simple-door-server">§</a>A simple door server</h3>
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>rusty_doors::{door_create, door_run};
+<span class="kw">use </span>rusty_doors_macros::door;
+<span class="kw">use </span>std::ffi::CString;
+
+<span class="attr">#[derive(Default)]
+#[repr(C)]
+</span><span class="kw">struct </span>Wrapped {
+    val: u64,
+    other: u16,
+}
+
+<span class="comment">// To make a door handler just apply the #[door] attribute macro
+</span><span class="attr">#[door]
+</span><span class="kw">fn </span>serv_proc(x: u64) -&gt; Wrapped {
+    <span class="kw">let </span>res = x + <span class="number">47</span>;
+    <span class="macro">println!</span>(<span class="string">"ARG: {}"</span>, x);
+    <span class="kw">return </span>Wrapped {
+        val: res,
+        other: <span class="number">99</span>,
+    };
+}
+
+<span class="kw">fn </span>main() {
+    <span class="kw">let </span>path = CString::new(<span class="string">"/tmp/addr-test-door"</span>).expect(<span class="string">"cstring"</span>);
+    <span class="kw">let </span>fd = door_create(serv_proc);
+    door_run(fd, path.as_c_str());
+}</code></pre></div>
+<h3 id="a-door-client"><a class="doc-anchor" href="#a-door-client">§</a>A door client</h3>
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>rusty_doors::door_call;
+<span class="kw">use </span>std::fs::File;
+<span class="kw">use </span>std::os::unix::io::AsRawFd;
+
+<span class="attr">#[derive(Default)]
+#[repr(C)]
+</span><span class="kw">struct </span>Wrapped {
+    val: u64,
+    other: u16,
+}
+
+<span class="kw">fn </span>main() {
+    <span class="kw">let </span>file = File::open(<span class="string">"/tmp/addr-test-door"</span>).expect(<span class="string">"open fd"</span>);
+
+    <span class="kw">let </span>x: u64 = <span class="number">74</span>;
+    <span class="kw">let </span>res: Wrapped = door_call(file.as_raw_fd(), x);
+
+    <span class="macro">assert_eq!</span>(res.val, <span class="number">121</span>);
+    <span class="macro">assert_eq!</span>(res.other, <span class="number">99</span>);
+}</code></pre></div>
+</div></details><h2 id="modules" class="section-header">Modules<a href="#modules" class="anchor">§</a></h2><ul class="item-table"><li><div class="item-name"><a class="mod" href="sys/index.html" title="mod rusty_doors::sys">sys</a></div><div class="desc docblock-short">System level doors elements.</div></li></ul><h2 id="functions" class="section-header">Functions<a href="#functions" class="anchor">§</a></h2><ul class="item-table"><li><div class="item-name"><a class="fn" href="fn.door_call.html" title="fn rusty_doors::door_call">door_call</a></div><div class="desc docblock-short">Call the door referenced by <code>fd</code> with argument data <code>x</code>. Returns door call
+result by value.</div></li><li><div class="item-name"><a class="fn" href="fn.door_call_slice.html" title="fn rusty_doors::door_call_slice">door_call_slice</a></div><div class="desc docblock-short">Call the door referenced by <code>fd</code> with argument slice <code>x</code>. Returns doo call
+result by value.</div></li><li><div class="item-name"><a class="fn" href="fn.door_callp.html" title="fn rusty_doors::door_callp">door_callp</a></div><div class="desc docblock-short">Call the door referenced by <code>fd</code> with argument data <code>x</code>. The address pointed
+to by <code>res</code> will be allocated by the door, and the result placed at that
+location. The return value is the address to the pointed to address.</div></li><li><div class="item-name"><a class="fn" href="fn.door_create.html" title="fn rusty_doors::door_create">door_create</a></div><div class="desc docblock-short">Create a door. The provided <a href="sys/type.DoorFunc.html" title="type rusty_doors::sys::DoorFunc"><code>sys::DoorFunc</code></a> will be called any time this
+door is called. Returns a file descriptor reference the created door.</div></li><li><div class="item-name"><a class="fn" href="fn.door_run.html" title="fn rusty_doors::door_run">door_run</a></div><div class="desc docblock-short">Run a door server for the door handler referenced by <code>fd</code>. <code>fd</code> should be
+the result of calling <a href="fn.door_create.html" title="fn rusty_doors::door_create"><code>door_create</code></a>.</div></li></ul></section></div></main></body></html>

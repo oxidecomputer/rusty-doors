@@ -1,0 +1,1 @@
+searchState.loadedDescShard("rusty_doors_macros", 0, "This module contains a single macro <code>door</code> for transforming …\nThis macro transforms function into a door call handler. …")
