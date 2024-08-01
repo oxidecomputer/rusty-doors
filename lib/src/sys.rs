@@ -48,8 +48,9 @@ pub type DoorFunc = unsafe extern "C" fn(
     c_uint,
 );
 
+#[cfg_attr(target_os = "illumos", link(name = "door"))]
+#[cfg(target_os = "illumos")]
 extern "C" {
-
     /// The `door_create` function creates a door descriptor that describes the
     /// procedure specified by the function `server_procedure`.
     ///
@@ -82,3 +83,38 @@ extern "C" {
         num_desc: c_uint,
     ) -> c_int;
 }
+
+#[cfg(not(target_os = "illumos"))]
+mod stubs {
+    use super::{DoorArg, DoorDesc, DoorFunc};
+    use std::os::raw::{c_char, c_int, c_uint, c_void};
+
+    // Stub out missing functions if on non-supported platform
+
+    pub unsafe fn door_create(
+        _server_procedure: DoorFunc,
+        _cookie: *mut c_void,
+        _attributes: c_uint,
+    ) -> c_int {
+        panic!("doors not supported on this platform");
+    }
+
+    pub unsafe fn door_call(_d: c_int, _params: *mut DoorArg) -> c_int {
+        panic!("doors not supported on this platform");
+    }
+
+    pub unsafe fn fattach(_fildes: c_int, _path: *const c_char) -> c_int {
+        panic!("doors not supported on this platform");
+    }
+
+    pub unsafe fn door_return(
+        _data_ptr: *mut c_char,
+        _data_size: usize,
+        _desc_ptr: *mut DoorDesc,
+        _num_desc: c_uint,
+    ) -> c_int {
+        panic!("doors not supported on this platform");
+    }
+}
+#[cfg(not(target_os = "illumos"))]
+pub use stubs::*;
